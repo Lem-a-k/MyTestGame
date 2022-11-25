@@ -2,36 +2,28 @@ import random
 
 import pygame
 
-size = width, height = 800, 600
+MAXW, MAXH = 1000, 800
+size = width, height = None, None
+
 
 def draw(cur_screen):
-    cur_screen.fill((10, 10, 30))
-    font = pygame.font.Font(None, 50)
-    text = font.render("Hello, Pygame!", True, (50, 155, 50))
-    text_x = width // 2 - text.get_width() // 2
-    text_y = height // 2 - text.get_height() // 2
-    text_w = text.get_width()
-    text_h = text.get_height()
-
-    for i in range(10000):
-        cur_screen.fill(pygame.Color('white'),
-                        (random.random() * width,
-                         random.random() * height, 1, 1))
-    cur_screen.blit(text, (text_x, text_y))
-    pygame.draw.rect(cur_screen, (0, 255, 0), (text_x - 10, text_y - 10,
-                                               text_w + 20, text_h + 20), 2)
-    pygame.draw.line(cur_screen, pygame.Color('orange'),
-                     (0, 0), size, width=5)
-    pygame.draw.line(cur_screen, pygame.Color('orange'),
-                     (width, 0), (0, height), width=5)
+    screen.fill((255, 255, 255))
+    side = a // n
+    for i in range(n):
+        for j in range(n):
+            if (i + j) % 2 == 0:
+                print(i, j)
+                screen.fill((0, 0, 0), (i * side, (height - side - j * side), side, side))
 
 
 if __name__ == '__main__':
+
+    a, n = map(int, input().split())
+    size = wight, height = a, a
     pygame.init()
-
     screen = pygame.display.set_mode(size)
-
+    draw(screen)
+    pygame.display.flip()
     while pygame.event.wait().type != pygame.QUIT:
-        draw(screen)
-        pygame.display.flip()
+        pass
     pygame.quit()
