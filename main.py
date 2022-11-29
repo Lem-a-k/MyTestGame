@@ -9,24 +9,19 @@ colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255)]
 
 
 class Ball:
-    R = 20
 
-    def __init__(self, x, y, dx, dy):
+    def __init__(self, x, y):
         self.x_pos = x
         self.y_pos = y
-        self.dx = dx
-        self.dy = dy
-        self.color = (random.randint(0, 255),
-                      random.randint(0, 255),
-                      random.randint(0, 255))
+        self.r = 0
+        self.color = pygame.Color('yellow')
 
-    def move(self):
-        self.x_pos = (self.x_pos + self.dx) % width
-        self.y_pos = (self.y_pos + self.dy) % height
+    def grow(self):
+        self.r += 1
 
     def draw(self, cur_screen):
         pygame.draw.circle(cur_screen, self.color,
-                           (self.x_pos, self.y_pos), Ball.R)
+                           (self.x_pos, self.y_pos), self.r)
 
 
 if __name__ == '__main__':
@@ -38,21 +33,20 @@ if __name__ == '__main__':
     x_pos = 0
     fps = 60  # количество кадров в секунду
     running = True
-    balls = []
+    ball = None
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            if event.type == pygame.MOUSEBUTTONUP:
-                balls.append(Ball(event.pos[0], event.pos[1],
-                                  random.randint(-4, 4), random.randint(-4, 4)))
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                ball = Ball(event.pos[0], event.pos[1])
 
         screen.fill((10, 10, 60))
-        for b in balls:
-            b.draw(screen)
+        if ball is not None:
+            ball.draw(screen)
         pygame.display.flip()
-        for b in balls:
-            b.move()
+        if ball is not None:
+            ball.grow()
 
         clock.tick(fps)
     pygame.quit()
