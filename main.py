@@ -1,6 +1,9 @@
+from copy import deepcopy
+from itertools import product
+
 import pygame
 
-size = width, height = 800, 400
+size = width, height = 1000, 600
 
 
 class Board:
@@ -40,8 +43,8 @@ class Board:
         return None
 
     def on_click(self, cell_coords):
-        i, j = cell_coords
-        self.board[i][j] ^= 1
+        row, col = cell_coords
+        self.board[row][col] ^= 1
 
     def process_click(self, mouse_pos):
         cell = self.get_cell(mouse_pos)
@@ -49,15 +52,37 @@ class Board:
         if cell is not None:
             self.on_click(cell)
 
+    def step(self):
+        new_board = deepcopy(self.board)
+        for i in range(self.n):
+            for j in range(self.m):
+                neighbours = 0
+                for di, dj in product([-1, 0, 1], repeat=2):
+                    if di == dj == 0:
+                        continue
+                    n_i = (i + di) % self.n
+                    n_j = (j + dj) % self.m
+                    neighbours += self.board[n_i][n_j]
+                if neighbours == 3:
+                    new_board[i][j] = 1
+                if neighbours < 2 or neighbours > 3:
+                    new_board[i][j] = 0
+        self.board = new_board
+
+
+
 
 if __name__ == '__main__':
     pygame.init()
     screen = pygame.display.set_mode(size)
 
-    board = Board(3, 5)
-    board.set_view(50, 20, 100)
+    board = Board(25, 40)
+    board.set_view(50, 20, 20)
     clock = pygame.time.Clock()
+    BOARD_STEP = pygame.USEREVENT + 1
+    pygame.time.set_timer(BOARD_STEP, 100)
     fps = 30
+    pause = True
     running = True
     while running:
         for event in pygame.event.get():
@@ -65,6 +90,12 @@ if __name__ == '__main__':
                 running = False
             elif event.type == pygame.MOUSEBUTTONUP:
                 board.process_click(event.pos)
+            elif event.type == pygame.KEYUP:
+                if event.key == pygame.K_SPACE:
+                    pause = not pause
+            elif event.type == BOARD_STEP:
+                if not pause:
+                    board.step()
         screen.fill((250, 255, 200))
         board.draw(screen)
         pygame.display.flip()
