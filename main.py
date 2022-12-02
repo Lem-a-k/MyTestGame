@@ -28,6 +28,23 @@ class Board:
                                  (self.left + j * self.cell_size, self.top + i * self.cell_size,
                                   self.cell_size + 1, self.cell_size + 1), 1)
 
+    def get_cell(self, mouse_pos):
+        x, y = mouse_pos
+        if self.left <= x <= self.left + self.m * self.cell_size:
+            if self.top <= y <= self.top + self.n * self.cell_size:
+                return (y - self.top) // self.cell_size, (x - self.left) // self.cell_size
+        return None
+
+    def on_click(self, cell_coords):
+        i, j = cell_coords
+        self.board[i][j] = 1
+
+    def process_click(self, mouse_pos):
+        cell = self.get_cell(mouse_pos)
+        print(cell)
+        if cell is not None:
+            self.on_click(cell)
+
 
 if __name__ == '__main__':
     pygame.init()
@@ -43,7 +60,7 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONUP:
-                pass
+                board.process_click(event.pos)
         screen.fill((250, 255, 200))
         board.draw(screen)
         pygame.display.flip()
