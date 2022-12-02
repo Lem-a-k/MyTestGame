@@ -37,8 +37,8 @@ class Board:
 
     def get_cell(self, mouse_pos):
         x, y = mouse_pos
-        if self.left <= x <= self.left + self.m * self.cell_size:
-            if self.top <= y <= self.top + self.n * self.cell_size:
+        if self.left <= x < self.left + self.m * self.cell_size:
+            if self.top <= y < self.top + self.n * self.cell_size:
                 return (y - self.top) // self.cell_size, (x - self.left) // self.cell_size
         return None
 
@@ -70,8 +70,6 @@ class Board:
         self.board = new_board
 
 
-
-
 if __name__ == '__main__':
     pygame.init()
     screen = pygame.display.set_mode(size)
@@ -90,6 +88,9 @@ if __name__ == '__main__':
                 running = False
             elif event.type == pygame.MOUSEBUTTONUP:
                 board.process_click(event.pos)
+            elif event.type == pygame.MOUSEMOTION:
+                if 1 in event.buttons:
+                    board.process_click(event.pos)
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_SPACE:
                     pause = not pause
