@@ -1,66 +1,40 @@
-import random
-
 import pygame
 
-MAXW, MAXH = 1000, 800
-size = width, height = None, None
-
-colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255)]
+size = width, height = 800, 400
 
 
-class Ball:
-    R = 20
+class Board:
+    # создание поля
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+        self.board = [[0] * width for _ in range(height)]
+        # значения по умолчанию
+        self.left = 10
+        self.top = 10
+        self.cell_size = 30
 
-    def __init__(self, x, y, dx, dy):
-        self.x_pos = x
-        self.y_pos = y
-        self.dx = dx
-        self.dy = dy
-        self.color = (random.randint(0, 255),
-                      random.randint(0, 255),
-                      random.randint(0, 255))
-
-    def move(self):
-        if self.x_pos + self.dx + Ball.R > width or self.x_pos + self.dx - Ball.R < 0:
-            self.dx *= -1
-        if self.y_pos + self.dy + Ball.R > height or self.y_pos + self.dy - Ball.R < 0:
-            self.dy *= -1
-        self.x_pos = self.x_pos + self.dx
-        self.y_pos = self.y_pos + self.dy
-
-    def draw(self, cur_screen):
-        pygame.draw.circle(cur_screen, self.color,
-                           (self.x_pos, self.y_pos), Ball.R)
+    # настройка внешнего вида
+    def set_view(self, left, top, cell_size):
+        self.left = left
+        self.top = top
+        self.cell_size = cell_size
 
 
 if __name__ == '__main__':
-    # что поменять:
-    # 1) шарик добавляется только по щелчку левой кнопки мыши
-    # 2) направление полёта на старте
-    # 3) цвет
     pygame.init()
-    size = width, height = 800, 400
     screen = pygame.display.set_mode(size)
-    clock = pygame.time.Clock()
 
-    x_pos = 0
-    fps = 60  # количество кадров в секунду
+    clock = pygame.time.Clock()
+    fps = 30
     running = True
-    balls = []
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            if event.type == pygame.MOUSEBUTTONUP:
-                balls.append(Ball(event.pos[0], event.pos[1],
-                                  random.randint(-4, 4), random.randint(-4, 4)))
-
-        screen.fill((10, 10, 60))
-        for b in balls:
-            b.draw(screen)
+            elif event.type == pygame.MOUSEBUTTONUP:
+                pass
+        screen.fill((250, 255, 200))
         pygame.display.flip()
-        for b in balls:
-            b.move()
-
         clock.tick(fps)
     pygame.quit()
