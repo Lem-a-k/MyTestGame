@@ -27,6 +27,10 @@ class Board:
                 pygame.draw.rect(cur_screen, self.color,
                                  (self.left + j * self.cell_size, self.top + i * self.cell_size,
                                   self.cell_size + 1, self.cell_size + 1), 1)
+                if self.board[i][j] == 1:
+                    pygame.draw.circle(cur_screen, self.color,
+                                       (self.left + j * self.cell_size + self.cell_size // 2,
+                                        self.top + i * self.cell_size + self.cell_size // 2), self.cell_size // 2 - 1)
 
     def get_cell(self, mouse_pos):
         x, y = mouse_pos
@@ -37,7 +41,7 @@ class Board:
 
     def on_click(self, cell_coords):
         i, j = cell_coords
-        self.board[i][j] = 1
+        self.board[i][j] ^= 1
 
     def process_click(self, mouse_pos):
         cell = self.get_cell(mouse_pos)
