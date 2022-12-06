@@ -30,10 +30,6 @@ class Board:
                 pygame.draw.rect(cur_screen, self.color,
                                  (self.left + j * self.cell_size, self.top + i * self.cell_size,
                                   self.cell_size + 1, self.cell_size + 1), 1)
-                if self.board[i][j] == 1:
-                    pygame.draw.circle(cur_screen, self.color,
-                                       (self.left + j * self.cell_size + self.cell_size // 2,
-                                        self.top + i * self.cell_size + self.cell_size // 2), self.cell_size // 2 - 1)
 
     def get_cell(self, mouse_pos):
         x, y = mouse_pos
@@ -43,14 +39,28 @@ class Board:
         return None
 
     def on_click(self, cell_coords):
-        row, col = cell_coords
-        self.board[row][col] ^= 1
+        pass
 
     def process_click(self, mouse_pos):
         cell = self.get_cell(mouse_pos)
-        print(cell)
         if cell is not None:
             self.on_click(cell)
+
+
+class Life(Board):
+
+    def draw(self, cur_screen):
+        super().draw(cur_screen)
+        for i in range(self.n):
+            for j in range(self.m):
+                if self.board[i][j] == 1:
+                    pygame.draw.circle(cur_screen, self.color,
+                                       (self.left + j * self.cell_size + self.cell_size // 2,
+                                        self.top + i * self.cell_size + self.cell_size // 2), self.cell_size // 2 - 1)
+
+    def on_click(self, cell_coords):
+        row, col = cell_coords
+        self.board[row][col] = 1
 
     def step(self):
         new_board = deepcopy(self.board)
@@ -74,7 +84,7 @@ if __name__ == '__main__':
     pygame.init()
     screen = pygame.display.set_mode(size)
 
-    board = Board(25, 40)
+    board = Life(25, 40)
     board.set_view(50, 20, 20)
     clock = pygame.time.Clock()
     BOARD_STEP = pygame.USEREVENT + 1
@@ -95,6 +105,7 @@ if __name__ == '__main__':
                 if event.key == pygame.K_SPACE:
                     pause = not pause
             elif event.type == BOARD_STEP:
+                pass
                 if not pause:
                     board.step()
         screen.fill((250, 255, 200))
