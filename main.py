@@ -93,7 +93,8 @@ if __name__ == '__main__':
     board.set_view(50, 20, 20)
     clock = pygame.time.Clock()
     BOARD_STEP = pygame.USEREVENT + 1
-    pygame.time.set_timer(BOARD_STEP, 100)
+    delay = 2 ** 7
+    pygame.time.set_timer(BOARD_STEP, delay)
     fps = 30
     pause = True
     running = True
@@ -104,8 +105,18 @@ if __name__ == '__main__':
             elif event.type == pygame.MOUSEBUTTONUP:
                 board.process_click(event.pos, tuple(int(x == event.button) for x in range(1, 4)))
             elif event.type == pygame.MOUSEMOTION:
-                if 1 in event.buttons:
+                if sum(event.buttons) > 0:
                     board.process_click(event.pos, event.buttons)
+            elif event.type == pygame.MOUSEWHEEL:
+                if event.y > 0:
+                    delay //= 2
+                    delay = max(1, delay)
+                else:
+                    delay *= 2
+                    delay = min(2 ** 12, delay)
+                pygame.time.set_timer(BOARD_STEP, delay)
+                print(delay)
+                print(dir(event))
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_SPACE:
                     pause = not pause
