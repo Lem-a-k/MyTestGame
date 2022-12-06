@@ -38,13 +38,13 @@ class Board:
                 return (y - self.top) // self.cell_size, (x - self.left) // self.cell_size
         return None
 
-    def on_click(self, cell_coords):
+    def on_click(self, cell_coords, mouse_buttons):
         pass
 
-    def process_click(self, mouse_pos):
+    def process_click(self, mouse_pos, mouse_buttons):
         cell = self.get_cell(mouse_pos)
         if cell is not None:
-            self.on_click(cell)
+            self.on_click(cell, mouse_buttons)
 
 
 class Life(Board):
@@ -58,9 +58,14 @@ class Life(Board):
                                        (self.left + j * self.cell_size + self.cell_size // 2,
                                         self.top + i * self.cell_size + self.cell_size // 2), self.cell_size // 2 - 1)
 
-    def on_click(self, cell_coords):
+    def on_click(self, cell_coords, mouse_buttons):
         row, col = cell_coords
-        self.board[row][col] = 1
+        print(mouse_buttons)
+        if sum(mouse_buttons) == 1:
+            if mouse_buttons[0]:
+                self.board[row][col] = 1
+            elif mouse_buttons[2]:
+                self.board[row][col] = 0
 
     def step(self):
         new_board = deepcopy(self.board)
@@ -97,10 +102,10 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONUP:
-                board.process_click(event.pos)
+                board.process_click(event.pos, tuple(int(x == event.button) for x in range(1, 4)))
             elif event.type == pygame.MOUSEMOTION:
                 if 1 in event.buttons:
-                    board.process_click(event.pos)
+                    board.process_click(event.pos, event.buttons)
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_SPACE:
                     pause = not pause
