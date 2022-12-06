@@ -6,6 +6,18 @@ import pygame
 size = width, height = 1000, 600
 
 
+def draw_speed(cur_screen, delay):
+    font = pygame.font.Font(None, 20)
+    text = font.render(str(delay), True, pygame.Color("black"))
+    text_w = text.get_width()
+    text_h = text.get_height()
+    text_x = width - text_w - 10
+    text_y = 10
+    cur_screen.blit(text, (text_x, text_y))
+    pygame.draw.rect(screen, (0, 255, 0), (text_x - 10, text_y - 10,
+                                           text_w + 20, text_h + 20), 1)
+
+
 class Board:
 
     def __init__(self, n, m):
@@ -126,6 +138,7 @@ if __name__ == '__main__':
                     board.step()
         screen.fill((250, 255, 200))
         board.draw(screen)
+        draw_speed(screen, delay)
         pygame.display.flip()
         clock.tick(fps)
     pygame.quit()
