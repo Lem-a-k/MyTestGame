@@ -1,144 +1,77 @@
-from copy import deepcopy
-from itertools import product
+import os
+import sys
 
 import pygame
 
 size = width, height = 1000, 600
 
 
-def draw_speed(cur_screen, delay):
-    font = pygame.font.Font(None, 20)
-    text = font.render(str(delay), True, pygame.Color("black"))
-    text_w = text.get_width()
-    text_h = text.get_height()
-    text_x = width - text_w - 10
-    text_y = 10
-    cur_screen.blit(text, (text_x, text_y))
-    pygame.draw.rect(screen, (0, 255, 0), (text_x - 10, text_y - 10,
-                                           text_w + 20, text_h + 20), 1)
-
-
-class Board:
-
-    def __init__(self, n, m):
-        self.n = n
-        self.m = m
-        self.board = [[0] * m for _ in range(n)]
-
-        self.left = 10
-        self.top = 10
-        self.cell_size = 30
-        self.color = pygame.Color('purple')
-
-    def set_view(self, left, top, cell_size, color=pygame.Color('purple')):
-        self.left = left
-        self.top = top
-        self.cell_size = cell_size
-        self.color = color
-
-    def draw(self, cur_screen):
-        for i in range(self.n):
-            for j in range(self.m):
-                pygame.draw.rect(cur_screen, self.color,
-                                 (self.left + j * self.cell_size, self.top + i * self.cell_size,
-                                  self.cell_size + 1, self.cell_size + 1), 1)
-
-    def get_cell(self, mouse_pos):
-        x, y = mouse_pos
-        if self.left <= x < self.left + self.m * self.cell_size:
-            if self.top <= y < self.top + self.n * self.cell_size:
-                return (y - self.top) // self.cell_size, (x - self.left) // self.cell_size
-        return None
-
-    def on_click(self, cell_coords, mouse_buttons):
-        pass
-
-    def process_click(self, mouse_pos, mouse_buttons):
-        cell = self.get_cell(mouse_pos)
-        if cell is not None:
-            self.on_click(cell, mouse_buttons)
-
-
-class Life(Board):
-
-    def draw(self, cur_screen):
-        super().draw(cur_screen)
-        for i in range(self.n):
-            for j in range(self.m):
-                if self.board[i][j] == 1:
-                    pygame.draw.circle(cur_screen, self.color,
-                                       (self.left + j * self.cell_size + self.cell_size // 2,
-                                        self.top + i * self.cell_size + self.cell_size // 2), self.cell_size // 2 - 1)
-
-    def on_click(self, cell_coords, mouse_buttons):
-        row, col = cell_coords
-        print(mouse_buttons)
-        if sum(mouse_buttons) == 1:
-            if mouse_buttons[0]:
-                self.board[row][col] = 1
-            elif mouse_buttons[2]:
-                self.board[row][col] = 0
-
-    def step(self):
-        new_board = deepcopy(self.board)
-        for i in range(self.n):
-            for j in range(self.m):
-                neighbours = 0
-                for di, dj in product([-1, 0, 1], repeat=2):
-                    if di == dj == 0:
-                        continue
-                    n_i = (i + di) % self.n
-                    n_j = (j + dj) % self.m
-                    neighbours += self.board[n_i][n_j]
-                if neighbours == 3:
-                    new_board[i][j] = 1
-                if neighbours < 2 or neighbours > 3:
-                    new_board[i][j] = 0
-        self.board = new_board
+def load_image(name, color_key=None):
+    fullname = os.path.join('data', name)
+    if not os.path.isfile(fullname):
+        print(f"Файл с изображением '{fullname}' не найден")
+        sys.exit()
+    image = pygame.image.load(fullname)
+    if color_key is not None:
+        # image = image.convert()
+        if color_key == -1:
+            color_key = image.get_at((0, 0))
+        image.set_colorkey(color_key)
+    else:
+        image = image.convert_alpha()
+    return image
 
 
 if __name__ == '__main__':
     pygame.init()
     screen = pygame.display.set_mode(size)
 
-    board = Life(25, 40)
-    board.set_view(50, 20, 20)
+    img1 = load_image("asteroid.png")
+    img2 = load_image("bomb.png")
+
+    all_sprites = pygame.sprite.Group()
+    pers = pygame.sprite.Sprite(all_sprites)
+    pers.image = img2
+    pers.rect = pers.image.get_rect()
+    pers.rect.x = 10
+    pers.rect.y = 10
+    pers.dx = 0
+    pers.dy = 0
+
     clock = pygame.time.Clock()
-    BOARD_STEP = pygame.USEREVENT + 1
-    delay = 2 ** 7
-    pygame.time.set_timer(BOARD_STEP, delay)
-    fps = 30
-    pause = True
+    fps = 60
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONUP:
-                board.process_click(event.pos, tuple(int(x == event.button) for x in range(1, 4)))
+                pers.rect.x = event.pos[0] - pers.rect.width // 2
+                pers.rect.y = event.pos[1] - pers.rect.height // 2
             elif event.type == pygame.MOUSEMOTION:
-                if sum(event.buttons) > 0:
-                    board.process_click(event.pos, event.buttons)
-            elif event.type == pygame.MOUSEWHEEL:
-                if event.y > 0:
-                    delay //= 2
-                    delay = max(1, delay)
-                else:
-                    delay *= 2
-                    delay = min(2 ** 12, delay)
-                pygame.time.set_timer(BOARD_STEP, delay)
-                print(delay)
-                print(dir(event))
-            elif event.type == pygame.KEYUP:
-                if event.key == pygame.K_SPACE:
-                    pause = not pause
-            elif event.type == BOARD_STEP:
                 pass
-                if not pause:
-                    board.step()
-        screen.fill((250, 255, 200))
-        board.draw(screen)
-        draw_speed(screen, delay)
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    pers.dy -= 1
+                elif event.key == pygame.K_DOWN:
+                    pers.dy += 1
+                elif event.key == pygame.K_LEFT:
+                    pers.dx -= 1
+                elif event.key == pygame.K_RIGHT:
+                    pers.dx += 1
+            elif event.type == pygame.KEYUP:
+                if event.key == pygame.K_UP:
+                    pers.dy += 1
+                elif event.key == pygame.K_DOWN:
+                    pers.dy -= 1
+                elif event.key == pygame.K_LEFT:
+                    pers.dx += 1
+                elif event.key == pygame.K_RIGHT:
+                    pers.dx -= 1
+        print(pers.dx, pers.dy)
+        screen.fill((50, 20, 75))
+        pers.rect = pers.rect.move(pers.dx, pers.dy)
+        all_sprites.draw(screen)
         pygame.display.flip()
         clock.tick(fps)
     pygame.quit()
