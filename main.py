@@ -4,10 +4,11 @@ import random
 
 import pygame
 
-size = width, height = 1000, 600
+size = width, height = 1000, 500
 pygame.init()
 screen = pygame.display.set_mode(size)
 
+BORDER = 5
 
 def load_image(name, color_key=None):
     fullname = os.path.join('data', name)
@@ -33,7 +34,11 @@ class Bomb(pygame.sprite.Sprite):
         super().__init__(*group)
         self.image = Bomb.img1
         self.rect = self.image.get_rect()
-        self.rect.x, self.rect.y = pos[0] - self.rect.width // 2, pos[1] - self.rect.height // 2
+        x = random.randint(BORDER, width - BORDER - self.rect.width)
+        y = random.randint(BORDER, height - BORDER - self.rect.height)
+        self.rect.x = x
+        self.rect.y = y
+        # self.rect.x, self.rect.y = pos[0] - self.rect.width // 2, pos[1] - self.rect.height // 2
 
     def update(self, *args):
         if args:
@@ -44,9 +49,9 @@ class Bomb(pygame.sprite.Sprite):
                     self.rect.height = self.image.get_rect().height
                     self.rect.x -= self.rect.width // 4
                     self.rect.y -= self.rect.height // 4
-        else:
-            self.rect = self.rect.move(random.randrange(3) - 1,
-                                       random.randrange(3) - 1)
+        # else:
+        #     self.rect = self.rect.move(random.randrange(3) - 1,
+        #                                random.randrange(3) - 1)
 
 
 
