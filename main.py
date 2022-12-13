@@ -90,13 +90,12 @@ class Bomb(pygame.sprite.Sprite):
 
     def update(self, *args):
         if args:
-            if isinstance(args[0], pygame.sprite.GroupSingle):
-                if intersect_rect(self.rect, args[0].sprite.rect):
+            if self.image == Bomb.img1 and isinstance(args[0], pygame.sprite.GroupSingle):
+                if pygame.sprite.collide_mask(self, args[0].sprite):
                     self.boom()
-            elif args[0].type == pygame.MOUSEBUTTONUP and args[0].button != 1:
+            elif hasattr(args[0], 'type') and args[0].type == pygame.MOUSEBUTTONUP and args[0].button != 1:
                 if self.image == Bomb.img1 and self.rect.collidepoint(args[0].pos):
                     self.boom()
-
         else:
             self.rect = self.rect.move(random.randrange(3) - 1,
                                        random.randrange(3) - 1)
@@ -129,6 +128,8 @@ if __name__ == '__main__':
         screen.fill((50, 20, 75))
 
         all_bombs.update(main_character)
+        # pygame.sprite.groupcollide(main_character, all_bombs, False, True)
+
         all_bombs.draw(screen)
         main_character.draw(screen)
 
