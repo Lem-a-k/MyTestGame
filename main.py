@@ -10,6 +10,7 @@ screen = pygame.display.set_mode(size)
 
 BORDER = 5
 
+
 def load_image(name, color_key=None):
     fullname = os.path.join('data', name)
     if not os.path.isfile(fullname):
@@ -24,6 +25,44 @@ def load_image(name, color_key=None):
     else:
         image = image.convert_alpha()
     return image
+
+
+class Creature(pygame.sprite.Sprite):
+    img_main = load_image("creature.png", -1)
+
+    def __init__(self, *group):
+        super().__init__(*group)
+        self.image = Creature.img_main
+        self.rect = self.image.get_rect()
+        self.rect.x = width // 2 - self.rect.width // 2
+        self.rect.y = height // 2 - self.rect.height // 2
+        self.speed = 2
+        self.dx = self.dy = 0
+
+    def update(self, *args):
+        if args:
+            cur_event = args[0]
+            if cur_event.type == pygame.KEYDOWN:
+                if cur_event.key == pygame.K_UP:
+                    self.dy -= self.speed
+                elif cur_event.key == pygame.K_DOWN:
+                    self.dy += self.speed
+                elif cur_event.key == pygame.K_LEFT:
+                    self.dx -= self.speed
+                elif cur_event.key == pygame.K_RIGHT:
+                    self.dx += self.speed
+            elif cur_event.type == pygame.KEYUP:
+                if cur_event.key == pygame.K_UP:
+                    self.dy += self.speed
+                elif cur_event.key == pygame.K_DOWN:
+                    self.dy -= self.speed
+                elif cur_event.key == pygame.K_LEFT:
+                    self.dx += self.speed
+                elif cur_event.key == pygame.K_RIGHT:
+                    self.dx -= self.speed
+        else:
+            self.rect.x += self.dx
+            self.rect.y += self.dy
 
 
 class Bomb(pygame.sprite.Sprite):
@@ -54,13 +93,11 @@ class Bomb(pygame.sprite.Sprite):
         #                                random.randrange(3) - 1)
 
 
-
 if __name__ == '__main__':
-
-    img1 = load_image("asteroid.png")
 
     all_sprites = pygame.sprite.Group()
 
+    pers = Creature(all_sprites)
     clock = pygame.time.Clock()
     fps = 60
     running = True
@@ -75,10 +112,18 @@ if __name__ == '__main__':
                     all_sprites.update(event)
             elif event.type == pygame.MOUSEMOTION:
                 pass
-            elif event.type == pygame.KEYDOWN:
-                pass
-            elif event.type == pygame.KEYUP:
-                pass
+            elif event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
+                all_sprites.update(event)
+
+            # elif event.type == pygame.KEYUP:
+            #     if event.key == pygame.K_UP:
+            #         pers.dy += 1
+            #     elif event.key == pygame.K_DOWN:
+            #         pers.dy -= 1
+            #     elif event.key == pygame.K_LEFT:
+            #         pers.dx += 1
+            #     elif event.key == pygame.K_RIGHT:
+            #         pers.dx -= 1
 
         screen.fill((50, 20, 75))
 
