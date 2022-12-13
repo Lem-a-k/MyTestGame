@@ -4,6 +4,8 @@ import random
 
 import pygame
 
+from intersect import intersect_rect, intersect_circle
+
 size = width, height = 1000, 500
 pygame.init()
 screen = pygame.display.set_mode(size)
