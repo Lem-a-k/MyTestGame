@@ -88,16 +88,18 @@ class Bomb(pygame.sprite.Sprite):
                     self.rect.height = self.image.get_rect().height
                     self.rect.x -= self.rect.width // 4
                     self.rect.y -= self.rect.height // 4
-        # else:
-        #     self.rect = self.rect.move(random.randrange(3) - 1,
-        #                                random.randrange(3) - 1)
+        else:
+            self.rect = self.rect.move(random.randrange(3) - 1,
+                                       random.randrange(3) - 1)
 
 
 if __name__ == '__main__':
 
     all_sprites = pygame.sprite.Group()
+    all_bombs = pygame.sprite.Group()
+    main_character = pygame.sprite.GroupSingle()
 
-    pers = Creature(all_sprites)
+    pers = Creature(all_sprites, main_character)
     clock = pygame.time.Clock()
     fps = 60
     running = True
@@ -107,7 +109,7 @@ if __name__ == '__main__':
                 running = False
             elif event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:
-                    Bomb(event.pos, all_sprites)
+                    Bomb(event.pos, all_sprites, all_bombs)
                 else:
                     all_sprites.update(event)
             elif event.type == pygame.MOUSEMOTION:
@@ -115,19 +117,11 @@ if __name__ == '__main__':
             elif event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
                 all_sprites.update(event)
 
-            # elif event.type == pygame.KEYUP:
-            #     if event.key == pygame.K_UP:
-            #         pers.dy += 1
-            #     elif event.key == pygame.K_DOWN:
-            #         pers.dy -= 1
-            #     elif event.key == pygame.K_LEFT:
-            #         pers.dx += 1
-            #     elif event.key == pygame.K_RIGHT:
-            #         pers.dx -= 1
-
         screen.fill((50, 20, 75))
 
-        all_sprites.draw(screen)
+        all_bombs.draw(screen)
+        main_character.draw(screen)
+
         pygame.display.flip()
         all_sprites.update()
         clock.tick(fps)
