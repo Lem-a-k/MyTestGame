@@ -81,15 +81,22 @@ class Bomb(pygame.sprite.Sprite):
         self.rect.y = y
         # self.rect.x, self.rect.y = pos[0] - self.rect.width // 2, pos[1] - self.rect.height // 2
 
+    def boom(self):
+        self.image = Bomb.img2
+        self.rect.width = self.image.get_rect().width
+        self.rect.height = self.image.get_rect().height
+        self.rect.x -= self.rect.width // 4
+        self.rect.y -= self.rect.height // 4
+
     def update(self, *args):
         if args:
-            if args[0].type == pygame.MOUSEBUTTONUP and args[0].button != 1:
+            if isinstance(args[0], pygame.sprite.GroupSingle):
+                if intersect_rect(self.rect, args[0].sprite.rect):
+                    self.boom()
+            elif args[0].type == pygame.MOUSEBUTTONUP and args[0].button != 1:
                 if self.image == Bomb.img1 and self.rect.collidepoint(args[0].pos):
-                    self.image = Bomb.img2
-                    self.rect.width = self.image.get_rect().width
-                    self.rect.height = self.image.get_rect().height
-                    self.rect.x -= self.rect.width // 4
-                    self.rect.y -= self.rect.height // 4
+                    self.boom()
+
         else:
             self.rect = self.rect.move(random.randrange(3) - 1,
                                        random.randrange(3) - 1)
@@ -121,6 +128,7 @@ if __name__ == '__main__':
 
         screen.fill((50, 20, 75))
 
+        all_bombs.update(main_character)
         all_bombs.draw(screen)
         main_character.draw(screen)
 
