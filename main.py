@@ -4,8 +4,6 @@ import random
 
 import pygame
 
-from intersect import intersect_rect, intersect_circle
-
 size = width, height = 1000, 500
 pygame.init()
 screen = pygame.display.set_mode(size)
@@ -103,8 +101,7 @@ class Bomb(pygame.sprite.Sprite):
                                        random.randrange(3) - 1)
 
 
-if __name__ == '__main__':
-
+def game_main():
     all_sprites = pygame.sprite.Group()
     all_bombs = pygame.sprite.Group()
     main_character = pygame.sprite.GroupSingle()
@@ -166,4 +163,21 @@ if __name__ == '__main__':
 
         pygame.display.flip()
         clock.tick(fps)
+    pygame.quit()
+
+
+if __name__ == '__main__':
+    running = True
+    game = None
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYUP and event.key == pygame.K_SPACE:
+                game = 1
+                running = False
+        screen.fill(pygame.Color("yellow"))
+        pygame.display.flip()
+    if game == 1:
+        game_main()
     pygame.quit()
