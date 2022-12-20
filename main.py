@@ -115,7 +115,7 @@ def game_main():
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
+                return False
             elif event.type == pygame.MOUSEBUTTONUP:
                 if stage == 'menu':
                     pass
@@ -163,17 +163,9 @@ def game_main():
 
         pygame.display.flip()
         clock.tick(fps)
+    return True
 
 
 if __name__ == '__main__':
-    running = True
-    game = None
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            if event.type == pygame.KEYUP and event.key == pygame.K_SPACE:
-                game_main()
-        screen.fill(pygame.Color("yellow"))
-        pygame.display.flip()
+    game_main()
     pygame.quit()
