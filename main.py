@@ -141,7 +141,7 @@ def game_main():
                         selector = max(0, selector - 1)
 
         if stage == 'menu':
-            screen.fill(pygame.Color('coral4'))
+            screen.fill(pygame.Color('coral2'))
             font = pygame.font.Font(None, 30)
 
             for idx, line in enumerate(MENU_TXT):
