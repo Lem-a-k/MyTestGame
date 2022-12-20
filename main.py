@@ -163,7 +163,6 @@ def game_main():
 
         pygame.display.flip()
         clock.tick(fps)
-    pygame.quit()
 
 
 if __name__ == '__main__':
@@ -174,10 +173,7 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYUP and event.key == pygame.K_SPACE:
-                game = 1
-                running = False
+                game_main()
         screen.fill(pygame.Color("yellow"))
         pygame.display.flip()
-    if game == 1:
-        game_main()
     pygame.quit()
