@@ -1,18 +1,27 @@
-from yandex_testing_lesson import is_palindrome
+from test import is_prime
 
 if __name__ == '__main__':
-    tests = [('', True, 'empty string'),
-             ('a', True, ''),
-             ('aba', True, ''),
-             ('abc', False, 'not palindrome'),
-             ('ab', False, ''),
-             ('abccba', True, ''),
-             ('abcbca', False, 'wrong order')]
+    tests = [(2, True, ''),
+             (4, False, ''),
+             (7, True, ''),
+             (9, False, ''),
+             (12, False, '')]
+    excepts = [(1, Exception), (0, Exception), (-1, Exception)]
+    flag = True
     try:
         for test, res, comment in tests:
-            assert is_palindrome(test) == res, comment
+            assert is_prime(test) == res, comment
     except AssertionError as e:
-        print('NO')
-        # print(e)
-    else:
-        print('YES')
+        flag = False
+    except Exception:
+        flag = False
+    for test, ex in excepts:
+        try:
+            is_prime(test)
+        except ex:
+            pass
+        except Exception:
+            flag = False
+        else:
+            flag = False
+    print('YES' if flag else 'NO')
