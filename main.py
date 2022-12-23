@@ -1,27 +1,20 @@
-from test import is_prime
+from yandex_testing_lesson import strip_punctuation_ru
+
+
+def good_strip_punct(line):
+    text = ''.join(x for x in line if x.isalpha() or x.isspace()
+                   or x == '-').replace(' - ', ' ')
+    return ' '.join(text.split())
+
 
 if __name__ == '__main__':
-    tests = [(2, True, ''),
-             (4, False, ''),
-             (7, True, ''),
-             (9, False, ''),
-             (12, False, '')]
-    excepts = [(1, Exception), (0, Exception), (-1, Exception)]
+    tests = ["Мама мыла раму. Долго! ",
+             "Кое-где кое-кто кое-что не решил..."]
     flag = True
     try:
-        for test, res, comment in tests:
-            assert is_prime(test) == res, comment
+        for test in tests:
+            assert strip_punctuation_ru(test) == good_strip_punct(test)
     except AssertionError as e:
         flag = False
-    except Exception:
-        flag = False
-    for test, ex in excepts:
-        try:
-            is_prime(test)
-        except ex:
-            pass
-        except Exception:
-            flag = False
-        else:
-            flag = False
+
     print('YES' if flag else 'NO')

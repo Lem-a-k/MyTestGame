@@ -1,4 +1,8 @@
-def is_prime(x):
-    if x < 2:
-        raise Exception
-    return x % 2 != 0 or x == 2
+def strip_punctuation_ru(line):
+#    return ' '.join(line.split())
+
+
+#def good_strip_punct(line):
+    text = ''.join(x for x in line if x.isalpha() or x.isspace()
+                   or x == '-').replace(' - ', ' ')
+    return ' '.join(text.split())
